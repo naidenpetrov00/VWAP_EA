@@ -1,0 +1,9 @@
+# Compiled files
+*.ex5
+
+# MT5 junk
+*.log
+*.tmp
+
+# OS
+.DS_Store
