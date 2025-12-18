@@ -1,27 +1,44 @@
-//+------------------------------------------------------------------+
-//|                                                         VWAP.mqh |
-//|                                  Copyright 2025, MetaQuotes Ltd. |
-//|                                             https://www.mql5.com |
-//+------------------------------------------------------------------+
-#property copyright "Copyright 2025, MetaQuotes Ltd."
-#property link      "https://www.mql5.com"
-//+------------------------------------------------------------------+
-//| defines                                                          |
-//+------------------------------------------------------------------+
-// #define MacrosHello   "Hello, world!"
-// #define MacrosYear    2010
-//+------------------------------------------------------------------+
-//| DLL imports                                                      |
-//+------------------------------------------------------------------+
-// #import "user32.dll"
-//   int      SendMessageA(int hWnd,int Msg,int wParam,int lParam);
-// #import "my_expert.dll"
-//   int      ExpertRecalculate(int wParam,int lParam);
-// #import
-//+------------------------------------------------------------------+
-//| EX5 imports                                                      |
-//+------------------------------------------------------------------+
-// #import "stdlib.ex5"
-//   string ErrorDescription(int error_code);
-// #import
-//+------------------------------------------------------------------+
+#pragma once
+
+double VWAP_Value = 0.0;
+double VWAP_Upper[3];
+double VWAP_Lower[3];
+
+datetime VWAP_SessionStart = 0;
+
+datetime VWAP_GetSessionStart(datetime nowUtc)
+{
+   MqlDateTime t;
+   TimeToStruct(nowUtc, t);
+   
+   if(t.hour >= 23)
+      t.day = t.day;
+   else
+      t.day -= 1;
+      
+   t.hour = 23;
+   t.min  = 0;
+   t.sec  = 0;
+
+   return StructToTime(t);
+}
+
+bool VWAP_IsNewSession()
+{
+   datetime nowUtc = TimeGMT();
+   datetime sessionStart = VWAP_GetSessionStart(nowUtc);
+   
+   if(sessionStart != VWAP_SessionStart)
+     {
+         VWAP_SessionStart = sessionStart;
+         return true;
+     }
+   return false;
+}
+
+void VWAP_Calculate(ENUM_TIMEFRAMES TF)
+{
+   double sumTotalTradedValue = 0.0;
+   double sumTotalTradedVolume = 0.0;
+   double sumVolumeWeightedDeviation = 0.0;
+}
