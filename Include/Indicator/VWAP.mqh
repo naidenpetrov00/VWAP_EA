@@ -1,5 +1,3 @@
-#pragma once
-
 double VWAP_Value = 0.0;
 double VWAP_Upper[3];
 double VWAP_Lower[3];
@@ -41,4 +39,5 @@ void VWAP_Calculate(ENUM_TIMEFRAMES TF)
    double sumTotalTradedValue = 0.0;
    double sumTotalTradedVolume = 0.0;
    double sumVolumeWeightedDeviation = 0.0;
+   Print(sumTotalTradedValue);
 }

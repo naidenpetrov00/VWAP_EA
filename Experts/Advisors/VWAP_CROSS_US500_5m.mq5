@@ -6,24 +6,19 @@
 #property copyright "Copyright 2025, MetaQuotes Ltd."
 #property link      "https://www.mql5.com"
 #property version   "1.00"
-#include 
+#include <Indicators/VWAP.mqh>
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
-int OnInit()
-  {
 //---
-   
-//---
-   return(INIT_SUCCEEDED);
-  }
+
 //+------------------------------------------------------------------+
 //| Expert deinitialization function                                 |
 //+------------------------------------------------------------------+
 void OnDeinit(const int reason)
   {
 //---
-   
+      
   }
 //+------------------------------------------------------------------+
 //| Expert tick function                                             |
@@ -31,7 +26,7 @@ void OnDeinit(const int reason)
 void OnTick()
   {
 //---
-   
+      VWAP_Calculate(PERIOD_CURRENT);
   }
 //+------------------------------------------------------------------+
 //| Trade function                                                   |
@@ -39,6 +34,5 @@ void OnTick()
 void OnTrade()
   {
 //---
-   
   }
 //+------------------------------------------------------------------+
