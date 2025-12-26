@@ -1,0 +1,108 @@
+#pragma once
+
+// ================== VWAP STATE ==================
+double VWAP_Value = 0.0;
+double VWAP_Upper[3];
+double VWAP_Lower[3];
+
+datetime VWAP_SessionStart = 0;
+
+// ================== SESSION LOGIC ==================
+datetime VWAP_GetSessionStart(datetime nowUtc)
+{
+    MqlDateTime t;
+    TimeToStruct(nowUtc, t);
+
+    if (t.hour >= 23)
+        t.day = t.day;
+    else
+        t.day -= 1;
+
+    t.hour = 23;
+    t.min  = 0;
+    t.sec  = 0;
+
+    return StructToTime(t);
+}
+
+bool VWAP_IsNewSession()
+{
+    datetime nowUtc = TimeGMT();
+    datetime sessionStart = VWAP_GetSessionStart(nowUtc);
+
+    if (sessionStart != VWAP_SessionStart)
+    {
+        VWAP_SessionStart = sessionStart;
+        return true;
+    }
+    return false;
+}
+
+// ================== VWAP CALCULATION ==================
+void VWAP_Calculate(ENUM_TIMEFRAMES tf)
+{
+    double sumPV = 0.0;
+    double sumV  = 0.0;
+    double sumDev = 0.0;
+
+    int bars = Bars(_Symbol, tf);
+
+    for (int i = 0; i < bars; i++)
+    {
+        datetime barTime = iTime(_Symbol, tf, i);
+        if (barTime < VWAP_SessionStart)
+            break;
+
+        double price = (iHigh(_Symbol, tf, i)
+                       + iLow(_Symbol, tf, i)
+                       + iClose(_Symbol, tf, i)) / 3.0;
+
+        double vol = iVolume(_Symbol, tf, i);
+
+        sumPV += price * vol;
+        sumV  += vol;
+    }
+
+    if (sumV == 0.0)
+        return;
+
+    VWAP_Value = sumPV / sumV;
+
+    for (int i = 0; i < bars; i++)
+    {
+        datetime barTime = iTime(_Symbol, tf, i);
+        if (barTime < VWAP_SessionStart)
+            break;
+
+        double price = (iHigh(_Symbol, tf, i)
+                       + iLow(_Symbol, tf, i)
+                       + iClose(_Symbol, tf, i)) / 3.0;
+
+        double vol = iVolume(_Symbol, tf, i);
+
+        sumDev += MathPow(price - VWAP_Value, 2) * vol;
+    }
+
+    double std = MathSqrt(sumDev / sumV);
+
+    for (int i = 0; i < 3; i++)
+    {
+        VWAP_Upper[i] = VWAP_Value + std * (i + 1);
+        VWAP_Lower[i] = VWAP_Value - std * (i + 1);
+    }
+}
+
+
+
+
+void OnTick()
+{
+    static datetime lastBar = 0;
+    datetime currentBar = iTime(_Symbol, PERIOD_M5, 0);
+
+    if (VWAP_IsNewSession() || currentBar != lastBar)
+    {
+        lastBar = currentBar;
+        VWAP_Calculate(PERIOD_M5);
+    }
+}

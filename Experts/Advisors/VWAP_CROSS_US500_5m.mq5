@@ -6,7 +6,7 @@
 #property copyright "Copyright 2025, MetaQuotes Ltd."
 #property link      "https://www.mql5.com"
 #property version   "1.00"
-#include <Indicators/VWAP.mqh>
+#include <Indicator/VWAP.mqh>
 //+------------------------------------------------------------------+
 //| Expert initialization function                                   |
 //+------------------------------------------------------------------+
@@ -26,6 +26,7 @@ void OnDeinit(const int reason)
 void OnTick()
   {
 //---
+      bool new_session = VWAP_IsNewSession();
       VWAP_Calculate(PERIOD_CURRENT);
   }
 //+------------------------------------------------------------------+

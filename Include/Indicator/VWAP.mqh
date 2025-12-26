@@ -39,5 +39,17 @@ void VWAP_Calculate(ENUM_TIMEFRAMES TF)
    double sumTotalTradedValue = 0.0;
    double sumTotalTradedVolume = 0.0;
    double sumVolumeWeightedDeviation = 0.0;
-   Print(sumTotalTradedValue);
+   
+   int bars = Bars(_Symbol, TF);
+   Print(VWAP_SessionStart);
+   Print(bars);
+    for (int i = 2; i < bars; i++)
+    {
+        datetime barTime = iTime(_Symbol, TF, i);
+        Print(barTime);
+        if (barTime < VWAP_SessionStart)
+            Print(barTime);
+            Print(VWAP_SessionStart);
+            break;
+    }
 }
