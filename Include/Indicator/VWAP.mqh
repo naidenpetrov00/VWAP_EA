@@ -37,19 +37,30 @@ bool VWAP_IsNewSession()
 void VWAP_Calculate(ENUM_TIMEFRAMES TF)
 {
    double sumTotalTradedValue = 0.0;
-   double sumTotalTradedVolume = 0.0;
+   long sumTotalTradedVolume = 0.0;
    double sumVolumeWeightedDeviation = 0.0;
    
    int bars = Bars(_Symbol, TF);
-   Print(VWAP_SessionStart);
-   Print(bars);
-    for (int i = 2; i < bars; i++)
-    {
-        datetime barTime = iTime(_Symbol, TF, i);
-        Print(barTime);
-        if (barTime < VWAP_SessionStart)
-            Print(barTime);
-            Print(VWAP_SessionStart);
-            break;
-    }
+ 
+   for (int i = 0; i < bars; i++)
+   {
+      datetime barTime = iTime(_Symbol, TF, i);
+      if (barTime < VWAP_SessionStart)
+         break;
+        
+      double price = (iHigh(_Symbol,TF,i)
+                    + iLow(_Symbol,TF,i)
+                    + iClose(_Symbol,TF,i)) 
+                    / 3;
+      long volume = iVolume(_Symbol,TF,i);
+      
+      sumTotalTradedValue += price * volume;
+      sumTotalTradedVolume += volume;
+   }
+   
+   if (sumTotalTradedVolume == 0.0)
+      return;
+      
+   VWAP_Value = sumTotalTradedValue / sumTotalTradedVolume;
+   Print("VWAP_Value"+VWAP_Value);
 }

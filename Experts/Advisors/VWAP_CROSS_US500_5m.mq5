@@ -24,11 +24,17 @@ void OnDeinit(const int reason)
 //| Expert tick function                                             |
 //+------------------------------------------------------------------+
 void OnTick()
-  {
-//---
-      bool new_session = VWAP_IsNewSession();
-      VWAP_Calculate(PERIOD_CURRENT);
-  }
+{
+    static datetime lastBar = 0;
+    datetime currentBar = iTime(_Symbol, PERIOD_M5, 0);
+
+    if (VWAP_IsNewSession() || currentBar != lastBar)
+    {
+        lastBar = currentBar;
+        VWAP_Calculate(PERIOD_M5);
+    }
+}
+
 //+------------------------------------------------------------------+
 //| Trade function                                                   |
 //+------------------------------------------------------------------+
