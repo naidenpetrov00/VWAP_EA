@@ -62,5 +62,37 @@ void VWAP_Calculate(ENUM_TIMEFRAMES TF)
       return;
       
    VWAP_Value = sumTotalTradedValue / sumTotalTradedVolume;
-   Print("VWAP_Value"+VWAP_Value);
+   
+   for (int i = 0; i < bars; i++)
+   {
+      datetime barTime = iTime(_Symbol, TF, i);
+      if (barTime < VWAP_SessionStart)
+         break;
+        
+      double price = (iHigh(_Symbol,TF,i)
+                    + iLow(_Symbol,TF,i)
+                    + iClose(_Symbol,TF,i)) 
+                    / 3;
+      long volume = iVolume(_Symbol,TF,i);
+      
+      sumVolumeWeightedDeviation += MathPow(price - VWAP_Value, 2) * volume;
+   }
+   
+   double std = MathSqrt(sumVolumeWeightedDeviation / sumTotalTradedVolume);
+   
+   for(int i=0;i<3;i++)
+     {
+         double deviation = std * (i + 1);
+         VWAP_Upper[i] = VWAP_Value + deviation;
+         VWAP_Lower[i] = VWAP_Value - deviation;
+     }
+   for(int i = 0; i < ArraySize(VWAP_Upper); i++)
+      {
+         Print("Upper", VWAP_Upper[i]);
+      }
+   Print("VWAP" + VWAP_Value);
+   for(int i = 0; i < ArraySize(VWAP_Lower); i++)
+      {
+         Print("Lower", VWAP_Lower[i]);
+      }
 }
