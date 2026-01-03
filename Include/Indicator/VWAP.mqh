@@ -9,12 +9,12 @@ datetime VWAP_GetSessionStart(datetime nowUtc)
    MqlDateTime t;
    TimeToStruct(nowUtc, t);
    
-   if(t.hour >= 23)
+   if(t.hour >= 00)
       t.day = t.day;
    else
       t.day -= 1;
       
-   t.hour = 23;
+   t.hour = 00;
    t.min  = 0;
    t.sec  = 0;
 
